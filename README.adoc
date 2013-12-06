@@ -87,12 +87,40 @@ their semver information as values:
 include::complete/bower.json[]
 ----
 
+== Create a message bus factory module
+
+First, create a module that creates a msgs.js message bus, and configures it to use STOMP over a SockJS socket.
+
+`public/hello/connectMessageBus.js`
+[source,js]
+----
+include::complete/public/hello/connectMessageBus.js[]
+----
+
+The `connectMessageBus` function uses SockJS to create a socket connection to the provided message service URL.  SockJS provides the same API as WebSocket.  It will use native WebSocket in environments that support it, and will fall back to other communication mechanisms in environments where native WebSocket is not available.
+
+Once the socket has connected, a STOMP bridge is installed into the message bus.  Since STOMP has it's own connection handshake protocol on top of the socket protocol, the code arranges for the caller to be notified (via the `onConnect` callback) once the STOMP handshake has succeeded and thus the message bus is ready to be used.
+
 == Create a main module
 
-TODO
+Next, create a main module that uses the `connectMessageBus` module to create a message bus, and sets up the desired user interactions using standard DOM event handling.
+
+`public/hello/main.js`
+[source,js]
+----
+include::complete/public/hello/main.js[]
+----
+
+Once the DOM is ready, event handlers for the connect and disconnect buttons, and the name entry form are added.  The connect button handler calls `createMessageBus` to create the msgs.js bus and connect it to the Spring messaging service.  Once connected, the handler updates the UI state.  It then creates a msgs.js *inbound adapter*, `sendName`: a function that can be used to send data into the message bus.
+
+It then registers a callback to receive all messages from the Spring message service's `queue/greetings` queue.  When a message is received, the callback parses it as JSON, and calls the `addGreeting` function to update the UI.
 
 NOTE: In a real application, you'll want to use *data binding* or
 *templating*, rather than DOM manipulation as shown here.
+
+When the user types his/her name and clicks the send button (or presses return/enter) to submit the form, the form submit event handler simply extracts the name from the `name` input, and uses the `sendName` function (the inbound adapter created above) to place it onto the message bus.
+
+When the server receives the name, it will format a greeting, place it onto the greeting queue, and all connected clients will be able to receive it.
 
 == Create a boot script
 
