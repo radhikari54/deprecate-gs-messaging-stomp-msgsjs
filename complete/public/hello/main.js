@@ -42,7 +42,7 @@ define(function(require) {
 
 	function setConnected(connected) {
 		connectButton.disabled = !!connected;
-		disconnectButton.disabled = !connected;
+		disconnectButton.disabled = form.elements.send.disabled = !connected;
 		responseContainer.innerHTML = '';
 	}
 
