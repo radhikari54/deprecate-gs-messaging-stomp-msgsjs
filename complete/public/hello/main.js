@@ -3,7 +3,7 @@ define(function(require) {
 	var ready = require('curl/domReady');
 	var connectMessageBus = require('./connectMessageBus');
 
-	var bus, sendGreeting, form, connectButton, disconnectButton, responseContainer;
+	var bus, sendName, form, connectButton, disconnectButton, responseContainer;
 
 	ready(function() {
 		form = document.querySelector('form');
@@ -20,7 +20,7 @@ define(function(require) {
 		bus = connectMessageBus('//cw-stomp.cfapps.io/hello', function() {
 			setConnected(true);
 
-			sendGreeting = bus.inboundAdapter('remote!/app/hello', JSON.stringify);
+			sendName = bus.inboundAdapter('remote!/app/hello', JSON.stringify);
 
 			bus.on('remote!/queue/greetings', function(greeting) {
 				addGreeting(JSON.parse(greeting));
@@ -37,7 +37,7 @@ define(function(require) {
 		e.preventDefault();
 
 		var name = e.target.elements.name.value;
-		sendGreeting({ name: name });
+		sendName({ name: name });
 	}
 
 	function setConnected(connected) {
