@@ -1,0 +1,154 @@
+:spring_boot_version: 0.5.0.M6
+:gs-messaging-stomp-websocket: link:/guides/gs/messaging-stomp-websocket/
+:gs-spring-boot: link:/guides/gs/spring-boot/
+:toc:
+:icons: font
+:source-highlighter: prettify
+:project_id: gs-messaging-stomp-msgsjs
+This guide walks you through the process of consuming a simple msgs.js
+client that exchanges messages with a Spring STOMP messaging service.
+
+== What you'll build
+
+You will build a msgs.js client that consumes a Spring-based messaging service that uses the STOMP protocol over WebSockets. Specifically, the client will exchanges messages with the service created in
+{gs-messaging-stomp-websocket}[Messaging with STOMP over WebSocket].
+
+The msgs.js client will be accessed by opening the `index.html` file in
+your browser, and will exchanges messages with the Spring messaging service
+accepting requests at:
+
+    stomp-service.guides.spring.io/hello
+
+The client will send a link:/understanding/JSON[JSON] representation of a name entered into the UI:
+
+[source,json]
+----
+{"name":"Bob"}
+----
+
+The server publish a greeting response, which *all* connected clients will render into their UI:
+
+[source,json]
+----
+{"content":"Hello, Bob!"}
+----
+
+== What you'll need
+
+ - About 15 minutes
+ - A favorite text editor
+ - A modern web browser
+ - An internet connection
+ - Node.js and git pre-installed
+ - Bower installed as a global node.js package
+
+[[scratch]]
+[[initial]]
+== Create bower configuration files
+
+First, create a bower control file, `.bowerrc`.  This file tells bower
+where to put the JavaScript dependencies.  The `.bowerrc` file should
+be located at the root of the project (+{project_id}/initial+) and
+formatted as JSON:
+
+`.bowerrc`
+[source,txt]
+----
+include::complete/.bowerrc[]
+----
+
+From a command prompt at the root of the project, run `bower init`.
+This will create a `bower.json` file that describes the
+JavaScript packages required by the project.  Bower will ask for several
+bits of information such as a project name, license, etc.  If in doubt,
+just press `Enter` to accept the defaults.
+
+Next, use bower to install rest.js and an AMD module loader such as
+curl.js.  From the command prompt, type:
+
+----
+bower install --save msgs#dev curl#~0.8 sockjs#~0.3 stomp-websocket#~2.0
+----
+
+Bower will install msgs.js, curl.js, sockjs, and stomp into the directory we listed
+in `.bowerrc`.  Since we specified the `--save` option, bower will
+store the package information in the `bower.json` file.
+
+NOTE: Bower should discover that msgs.js depends on when.js
+and install a compatible version.
+
+When done, the `bower.json` file should have a "dependencies"
+object property that lists "msgs", "curl", "sockjs" and "stomp" as property names and
+their semver information as values:
+
+`bower.json`
+[source,json]
+----
+include::complete/bower.json[]
+----
+
+== Create a main module
+
+TODO
+
+NOTE: In a real application, you'll want to use *data binding* or
+*templating*, rather than DOM manipulation as shown here.
+
+== Create a boot script
+
+Next, create the boot script, `run.js`:
+
+`public/run.js`
+[source,js]
+----
+include::complete/public/run.js[]
+----
+
+This script configures the AMD loader: `curl.config()`.  The `main`
+configuration property tells curl.js where to find the application's
+main module, which will be fetched and evaluated automatically.
+The `packages` config object tells curl.js where to find modules
+in our application's packages or in third-party packages.
+
+
+== Create the application page
+
+Finally, create an `index.html` file and add the following HTML:
+
+`public/index.html`
+[source,html]
+----
+include::complete/public/index.html[]
+----
+
+The `script` element loads curl.js and then loads an *application boot
+script* named "run.js".  The boot script initializes and configures
+an AMD module environment and then starts the client-side application code.
+
+
+[[run]]
+== Run the client
+
+To run the client, you'll need to serve it from a web server to your browser. The Spring Boot CLI (Command Line Interface) includes an embedded Tomcat server, which offers a simple approach to serving web content. See {gs-spring-boot}[Building an Application with Spring Boot] for more information about installing and using the CLI.
+
+In order to serve static content from Spring Boot's embedded Tomcat server, you'll also need to create a minimal amount of web application code so that Spring Boot knows to start Tomcat. The following `app.groovy` script is sufficient for letting Spring Boot know that you want to run Tomcat:
+
+`app.groovy`
+[source,groovy]
+----
+include::complete/app.groovy[]
+----
+
+You can now run the app using the Spring Boot CLI:
+
+----
+spring run app.groovy
+----
+
+Once the app starts, open http://localhost:8080 and click the "Connect" button.
+
+Upon opening a connection, you are asked for your name. Enter your name and click "Send". Your name is sent to the server as a JSON message over STOMP. After a 3-second simulated delay, the server sends a message back with a "Hello" greeting that is displayed on the page. At this point, you can send another name, or you can click the "Disconnect" button to close the connection.
+
+== Summary
+
+Congratulations! You've just developed a msgs.js client that exchanges messages with a Spring STOMP-based messaging service.
