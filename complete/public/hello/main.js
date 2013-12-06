@@ -1,13 +1,9 @@
 define(function(require) {
 
-	var msgs = require('msgs');
-	var SockJS = require('sockjs');
 	var ready = require('curl/domReady');
+	var connectMessageBus = require('./connectMessageBus');
 
-	var bus, socket, sendGreeting, form, connectButton, disconnectButton, responseContainer;
-
-	require('msgs/adapters/webSocket');
-	require('msgs/channels/bridges/stomp');
+	var bus, sendGreeting, form, connectButton, disconnectButton, responseContainer;
 
 	ready(function() {
 		form = document.querySelector('form');
@@ -15,33 +11,19 @@ define(function(require) {
 		disconnectButton = document.querySelector('[data-disconnect]');
 		responseContainer = document.querySelector('[data-response]');
 
+		form.addEventListener('submit', parseFormAndSend);
 		connectButton.addEventListener('click', connect);
 		disconnectButton.addEventListener('click', disconnect);
-		form.addEventListener('submit', function(e) {
-			e.preventDefault();
-
-			var name = e.target.elements.name.value;
-			sendGreeting({ name: name });
-		});
 	});
 
 	function connect() {
-		bus = msgs.bus();
-		socket = new SockJS('//cw-stomp.cfapps.io/hello');
+		bus = connectMessageBus('//cw-stomp.cfapps.io/hello', function() {
+			setConnected(true);
 
-		socket.addEventListener('open', function () {
-			var bridge = bus.stompWebSocketBridge('remote', socket, { ack: 'client' });
+			sendGreeting = bus.inboundAdapter('remote!/app/hello', JSON.stringify);
 
-			bridge.controlBus.on('connected', function () {
-				setConnected(true);
-				sendGreeting = bus.inboundAdapter('remote!/app/hello', JSON.stringify);
-				bus.on('remote!/queue/greetings', function(greeting) {
-					addGreeting(JSON.parse(greeting));
-				});
-			});
-
-			bridge.controlBus.on('error', function (error) {
-				console.error('STOMP protocol error ' + error);
+			bus.on('remote!/queue/greetings', function(greeting) {
+				addGreeting(JSON.parse(greeting));
 			});
 		});
 	}
@@ -51,14 +33,21 @@ define(function(require) {
 		setConnected(false);
 	}
 
+	function parseFormAndSend(e) {
+		e.preventDefault();
+
+		var name = e.target.elements.name.value;
+		sendGreeting({ name: name });
+	}
+
 	function setConnected(connected) {
-		connectButton.disabled = connected;
+		connectButton.disabled = !!connected;
 		disconnectButton.disabled = !connected;
 		responseContainer.innerHTML = '';
 	}
 
 	function addGreeting(greeting) {
 		form.reset();
-		document.querySelector('[data-response]').innerHTML += '<p>' + greeting.content + '</p>';
+		responseContainer.innerHTML += '<p>' + greeting.content + '</p>';
 	}
 });
