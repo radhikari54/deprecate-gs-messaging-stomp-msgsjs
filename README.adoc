@@ -5,7 +5,7 @@
 :icons: font
 :source-highlighter: prettify
 :project_id: gs-messaging-stomp-msgsjs
-This guide walks you through the process of consuming a simple msgs.js
+This guide walks you through the process of building a simple msgs.js
 client that exchanges messages with a Spring STOMP messaging service.
 
 == What you'll build
