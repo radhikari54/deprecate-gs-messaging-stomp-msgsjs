@@ -11,7 +11,7 @@ client that exchanges messages with a Spring STOMP messaging service.
 == What you'll build
 
 You will build a msgs.js client that consumes a Spring-based messaging service that uses the STOMP protocol over WebSockets. Specifically, the client will exchanges messages with the service created in
-{gs-messaging-stomp-websocket}[Messaging with STOMP over WebSocket].
+{gs-messaging-stomp-websocket}[Using WebSocket to build an interactive web application].
 
 The msgs.js client will be accessed by opening the `index.html` file in
 your browser, and will exchanges messages with the Spring messaging service
