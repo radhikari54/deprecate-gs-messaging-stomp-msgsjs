@@ -17,7 +17,7 @@ define(function(require) {
 	});
 
 	function connect() {
-		bus = connectMessageBus('//cw-stomp.cfapps.io/hello', function() {
+		bus = connectMessageBus('//stomp.guides.spring.io/hello', function() {
 			setConnected(true);
 
 			sendName = bus.inboundAdapter('remote!/app/hello', JSON.stringify);

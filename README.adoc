@@ -17,7 +17,7 @@ The msgs.js client will be accessed by opening the `index.html` file in
 your browser, and will exchanges messages with the Spring messaging service
 accepting requests at:
 
-    stomp-service.guides.spring.io/hello
+    stomp.guides.spring.io/hello
 
 The client will send a link:/understanding/JSON[JSON] representation of a name entered into the UI:
 
