@@ -10,7 +10,7 @@ client that exchanges messages with a Spring STOMP messaging service.
 
 == What you'll build
 
-You will build a msgs.js client that consumes a Spring-based messaging service that uses the STOMP protocol over WebSocket. Specifically, the client will exchanges messages with the service created in
+You will build a msgs.js client that consumes a Spring-based messaging service that uses the STOMP protocol over WebSocket. Specifically, the client will exchange messages with the service created in
 {gs-messaging-stomp-websocket}[Using WebSocket to build an interactive web application].
 
 The msgs.js client will be accessed by opening the `index.html` file in
@@ -26,7 +26,7 @@ The client will send a link:/understanding/JSON[JSON] representation of a name e
 {"name":"Bob"}
 ----
 
-The server publish a greeting response, which *all* connected clients will render into their UI:
+The server will publish a greeting response, which *all* connected clients will render into their UI:
 
 [source,json]
 ----
@@ -46,10 +46,11 @@ The server publish a greeting response, which *all* connected clients will rende
 [[initial]]
 == Create bower configuration files
 
-First, create a bower control file, `.bowerrc`.  This file tells bower
-where to put the JavaScript dependencies.  The `.bowerrc` file should
-be located at the root of the project (+{project_id}/initial+) and
-formatted as JSON:
+Bower is a link:/understanding/javascript-package-managers[JavaScript package manager].
+To install packages needed to build the msgs.js client, first, create
+a bower control file, `.bowerrc`.  This file tells bower where to put
+the JavaScript dependencies.  The `.bowerrc` file should be located at
+the root of the project (+{project_id}/initial+) and formatted as link:/understanding/JSON[JSON]:
 
 `.bowerrc`
 [source,txt]
@@ -63,23 +64,25 @@ JavaScript packages required by the project.  Bower will ask for several
 bits of information such as a project name, license, etc.  If in doubt,
 just press `Enter` to accept the defaults.
 
-Next, use bower to install rest.js and an AMD module loader such as
-curl.js.  From the command prompt, type:
+Next, use bower to install msgs.js, sockjs, which provides WebSocket
+fallback support in older browsers, a stomp protocol handler for
+WebSocket, and an link:/understanding/javascript-modules[AMD module loader]
+such as curl.js.  From the command prompt, type:
 
 ----
 bower install --save msgs#dev curl#~0.8 sockjs#~0.3 stomp-websocket#~2.0
 ----
 
-Bower will install msgs.js, curl.js, sockjs, and stomp into the directory we listed
-in `.bowerrc`.  Since we specified the `--save` option, bower will
-store the package information in the `bower.json` file.
+Bower will install msgs.js, curl.js, sockjs, and stomp-websocket into the
+directory we listed in `.bowerrc`.  Since we specified the `--save` option,
+bower will store the package information in the `bower.json` file.
 
 NOTE: Bower should discover that msgs.js depends on when.js
 and install a compatible version.
 
 When done, the `bower.json` file should have a "dependencies"
-object property that lists "msgs", "curl", "sockjs" and "stomp" as property names and
-their semver information as values:
+object property that lists "msgs", "curl", "sockjs" and "stomp-websocket" as
+property names and their semantic version (semver) information as values:
 
 `bower.json`
 [source,json]
@@ -122,9 +125,9 @@ When the user types his/her name and clicks the send button (or presses return/e
 
 When the server receives the name, it will format a greeting, place it onto the greeting queue, and all connected clients will be able to receive it.
 
-== Create a boot script
+== Create an AMD boot script
 
-Next, create the boot script, `run.js`:
+Next, create the AMD boot script, `run.js`:
 
 `public/run.js`
 [source,js]
