@@ -2,8 +2,7 @@
 cd $(dirname $0)
 
 curl -s get.gvmtool.net | bash
-source "$HOME/.gvm/bin/gvm-init.sh"
-sleep 5
+[[ -s "$HOME/.gvm/bin/gvm-init.sh" ]] && source "$HOME/.gvm/bin/gvm-init.sh"
 echo "Y" | gvm install springboot
 
 cd ../complete
